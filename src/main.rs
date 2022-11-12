@@ -31,7 +31,7 @@ fn main() {
         stdout.flush().unwrap();
     }
 
-    let commands = vec!["kodi", "com.valvesoftware.SteamLink"];
+    let commands = vec!["kodi", "steamlink", "com.valvesoftware.SteamLink"];
     let mut commands = commands.iter().cycle();
 
     let mut command = "";

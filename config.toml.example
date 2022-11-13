@@ -1,0 +1,8 @@
+[[menu_entries]]
+name = "Kodi"
+command = "kodi"
+
+[[menu_entries]]
+name = "SteamLink"
+command = "com.valvesoftware.SteamLink"
+

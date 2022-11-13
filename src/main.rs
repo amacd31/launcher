@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::process::{Command, exit};
 use std::{thread, time};
 
@@ -10,7 +11,23 @@ use termion::raw::IntoRawMode;
 
 use gilrs::{Gilrs, Button, Event};
 
+use serde_derive::Deserialize;
+
+#[derive(Deserialize, Debug)]
+struct MenuEntry {
+    name: String,
+    command: String,
+}
+
+fn read_config() -> std::io::Result<HashMap<String, Vec<MenuEntry>>> {
+    let content = std::fs::read_to_string("config.toml")?;
+    let menu_entries: HashMap<String, Vec<MenuEntry>> = toml::from_str(&content)?;
+    Ok(menu_entries)
+}
+
 fn main() {
+    let config = read_config().unwrap();
+
     let stdin = stdin();
     let mut stdout = MouseTerminal::from(stdout().into_raw_mode().unwrap());
      
@@ -31,7 +48,7 @@ fn main() {
         stdout.flush().unwrap();
     }
 
-    let commands = vec!["kodi", "steamlink", "com.valvesoftware.SteamLink"];
+    let commands = &config["menu_entries"];
     let mut commands = commands.iter().cycle();
 
     let mut command = "";
@@ -43,9 +60,11 @@ fn main() {
 
         if let Some(gamepad) = active_gamepad.map(|id| gilrs.gamepad(id)) {
             if gamepad.is_pressed(Button::RightTrigger) {
-                command = commands.next().unwrap();
+                let menu_entry = commands.next().unwrap();
+                let name = &menu_entry.name;
+                command = &menu_entry.command;
                 write!(stdout, "{}{}", termion::cursor::Goto(3, 3), "                                               ").unwrap();
-                write!(stdout, "{}{}", termion::cursor::Goto(3, 3), command).unwrap();
+                write!(stdout, "{}{}", termion::cursor::Goto(3, 3), name).unwrap();
                 stdout.flush().unwrap();
             }
             if gamepad.is_pressed(Button::South) {

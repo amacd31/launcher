@@ -8,3 +8,6 @@ edition = "2021"
 [dependencies]
 termion = "1"
 gilrs = "0.10.0"
+serde = "1"
+serde_derive = "1"
+toml = "0.5.9"
